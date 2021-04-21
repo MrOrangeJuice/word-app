@@ -3,6 +3,11 @@ const app = express();
 const port = process.env.PORT || 3001;
 const unirest = require("unirest");
 const API_KEY = "d36f29d1-db54-4fc0-9d0c-7d327552c3e5";
+// import path library
+const path = require('path');
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('/api/associations/:word', (req, res) => {
 	const word = req.params.word;
@@ -16,6 +21,12 @@ app.get('/api/associations/:word', (req, res) => {
 		console.log(`error=${error}`);
 		res.json({status:"Error", message: `${error}`});
 	});
+});
+
+// put this AFTER the other `app.get(...`
+// for any request that doesn't match one above, send back React's index.html file
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
 
 app.listen(port, () => {
